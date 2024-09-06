@@ -63,6 +63,7 @@ class multiSpaGCN:
     def predict(self):
         _, q = self.model.predict(self.embed, self.adj_exp)
         y_pred = torch.argmax(q, dim=1).data.cpu().numpy()
+        # Max probability plot
         prob = q.detach().numpy()
         return y_pred, prob
 
@@ -78,10 +79,3 @@ class SpaGCN(multiSpaGCN):
 
     def train(self, adata, adj, *args, **kwargs):  # pylint: disable=arguments-differ
         super().train([adata], adj, [self.l], *args, **kwargs)
-
-    def predict(self):
-        _, q = self.model.predict(self.embed, self.adj_exp)
-        y_pred = torch.argmax(q, dim=1).data.cpu().numpy()
-        # Max probability plot
-        prob = q.detach().numpy()
-        return y_pred, prob
