@@ -10,7 +10,16 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
-License-File: License
+Requires-Dist: python-igraph
+Requires-Dist: torch
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: scanpy
+Requires-Dist: anndata
+Requires-Dist: louvain
+Requires-Dist: scikit-learn
+Requires-Dist: numba
 
 # SpaGCN
 

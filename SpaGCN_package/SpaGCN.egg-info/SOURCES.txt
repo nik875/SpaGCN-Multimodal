@@ -6,8 +6,10 @@ SpaGCN/__init__.py
 SpaGCN/calculate_adj.py
 SpaGCN/calculate_moran_I.py
 SpaGCN/ez_mode.py
+SpaGCN/histology.py
 SpaGCN/layers.py
 SpaGCN/models.py
+SpaGCN/pipeline.py
 SpaGCN/util.py
 SpaGCN.egg-info/PKG-INFO
 SpaGCN.egg-info/SOURCES.txt
