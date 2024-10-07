@@ -7,12 +7,12 @@ from . models import simple_GC_DEC
 
 
 class multiSpaGCN:
-    def __init__(self, num_pcs=50):
+    def __init__(self):
         self.model = None
         self.embed = None
         self.adj_exp = None
         self.adata_all = None
-        self.num_pcs = num_pcs
+        self.num_pcs = None
         self.params = {
             'lr': 0.005,
             'max_epochs': 2000,
@@ -26,12 +26,7 @@ class multiSpaGCN:
             'tol': 1e-3
         }
 
-    def train(self, adata_list, adj_list, l_list, **kwargs):
-        # Update parameters with any provided kwargs
-        if 'num_pcs' in kwargs:
-            self.num_pcs = kwargs.pop('num_pcs')
-        self.params.update(kwargs)
-
+    def train(self, adata_list, adj_list, l_list, num_pcs=50):
         # Prepare data
         num_spots = sum(adata.shape[0] for adata in adata_list)
         adj_exp_all = np.zeros((num_spots, num_spots))
@@ -49,11 +44,11 @@ class multiSpaGCN:
             join='inner',
             batch_key="dataset_batch",
             batch_categories=batch_cat)
+        X = self.adata_all.X.toarray() if issparse(self.adata_all.X) else self.adata_all.X
 
         # Perform PCA
-        pca = PCA(n_components=self.num_pcs)
-        X = self.adata_all.X.toarray() if issparse(self.adata_all.X) else self.adata_all.X
-        self.embed = pca.fit_transform(X)
+        self.num_pcs = num_pcs
+        self.embed = PCA(n_components=self.num_pcs).fit_transform(X) if self.num_pcs else X
 
         # Train model
         self.model = simple_GC_DEC(self.embed.shape[1], self.embed.shape[1])

@@ -17,24 +17,33 @@ def pairwise_distance(X):
     return adj
 
 
+def extract_regions(image, x_pixel, y_pixel, beta):
+    beta_half = round(beta / 2)
+    max_x, max_y = image.shape[:2]
+
+    # Create meshgrid for x and y coordinates
+    x = np.arange(2 * beta_half + 1) - beta_half
+    y = np.arange(2 * beta_half + 1) - beta_half
+    xx, yy = np.meshgrid(x, y)
+
+    # Broadcast to match the number of pixels
+    xx = xx[np.newaxis, :, :] + x_pixel[:, np.newaxis, np.newaxis]
+    yy = yy[np.newaxis, :, :] + y_pixel[:, np.newaxis, np.newaxis]
+
+    # Clip coordinates to image boundaries
+    xx = np.clip(xx, 0, max_x - 1)
+    yy = np.clip(yy, 0, max_y - 1)
+
+    # Extract regions
+    regions = image[xx, yy]
+
+    return regions
+
+
 def extract_color(x_pixel=None, y_pixel=None, image=None, beta=49):
     # beta to control the range of neighbourhood when calculate grey vale for one spot
-    beta_half = round(beta / 2)
-    g = []
-    for i, val in enumerate(x_pixel):
-        max_x = image.shape[0]
-        max_y = image.shape[1]
-        nbs = image[max(0, val - beta_half):min(max_x, val + beta_half + 1),
-                    max(0, y_pixel[i] - beta_half):min(max_y, y_pixel[i] + beta_half + 1)]
-        g.append(np.mean(np.mean(nbs, axis=0), axis=0))
-    c0, c1, c2 = [], [], []
-    for i in g:
-        c0.append(i[0])
-        c1.append(i[1])
-        c2.append(i[2])
-    c0 = np.array(c0)
-    c1 = np.array(c1)
-    c2 = np.array(c2)
+    g = extract_regions(image, x_pixel, y_pixel, beta).mean(axis=(1, 2))
+    c0, c1, c2 = g[:, 0], g[:, 1], g[:, 2]
     c3 = (c0 * np.var(c0) + c1 * np.var(c1) + c2 * np.var(c2)) / \
         (np.var(c0) + np.var(c1) + np.var(c2))
     return c3
